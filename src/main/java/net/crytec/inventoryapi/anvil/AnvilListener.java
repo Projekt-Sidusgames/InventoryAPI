@@ -18,7 +18,7 @@ public class AnvilListener implements Listener {
   private static final Map<Player, AnvilGUI> openInventories = Maps.newHashMap();
 
 
-  public AnvilListener() {
+  protected AnvilListener() {
   }
 
   public void add(final Player player, final AnvilGUI gui) {

@@ -18,7 +18,6 @@ public class AnvilGUI {
     WRAPPER = new AnvilImplementation();
     listener = new AnvilListener();
     Bukkit.getPluginManager().registerEvents(listener, InventoryAPI.get().getHost());
-    System.out.println("Initialized Listeners" + (listener == null));
   }
 
   private final Player holder;
