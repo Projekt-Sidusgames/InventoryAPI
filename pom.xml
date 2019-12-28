@@ -31,7 +31,7 @@
     </repository>
     <repository>
       <id>avarion-private</id>
-      <url>https://repo.avarioncraft.de/repository/development/</url>
+      <url>http://repo.avarioncraft.de/repository/development/</url>
     </repository>
   </repositories>
 
