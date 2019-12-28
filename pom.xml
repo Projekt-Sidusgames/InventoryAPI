@@ -29,6 +29,10 @@
       <id>spigot</id>
       <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
+    <repository>
+      <id>avarion-private</id>
+      <url>https://repo.avarioncraft.de/repository/development/</url>
+    </repository>
   </repositories>
 
   <dependencies>
