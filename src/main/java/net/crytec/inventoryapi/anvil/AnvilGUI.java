@@ -1,8 +1,7 @@
 package net.crytec.inventoryapi.anvil;
 
+import com.google.common.base.Preconditions;
 import java.util.function.BiFunction;
-import net.crytec.inventoryapi.InventoryAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -11,14 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class AnvilGUI {
 
-  private static final AnvilImplementation WRAPPER;
-  private static final AnvilListener listener;
-
-  static {
-    WRAPPER = new AnvilImplementation();
-    listener = new AnvilListener();
-    Bukkit.getPluginManager().registerEvents(listener, InventoryAPI.get().getHost());
-  }
+  protected static AnvilImplementation WRAPPER;
+  protected static AnvilListener listener;
 
   private final Player holder;
   private final ItemStack insert;
@@ -36,6 +29,7 @@ public class AnvilGUI {
    * @throws NullPointerException If the server version isn't supported
    */
   public AnvilGUI(final Player holder, final String insert, final BiFunction<Player, String, String> biFunction) {
+    Preconditions.checkNotNull(WRAPPER, "AnvilGUI is not yet initialized.");
     this.holder = holder;
     this.biFunction = biFunction;
 
