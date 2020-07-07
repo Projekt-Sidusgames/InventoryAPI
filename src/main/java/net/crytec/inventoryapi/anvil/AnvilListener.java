@@ -1,81 +1,104 @@
 package net.crytec.inventoryapi.anvil;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
 import java.util.Map;
-import net.crytec.inventoryapi.anvil.AnvilGUI.Slot;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class AnvilListener implements Listener {
 
-  private static final Map<Player, AnvilGUI> openInventories = Maps.newHashMap();
+  private static final Map<Player, AnvilGUI> openInventories = new HashMap<>();
+  private final JavaPlugin host;
 
-
-  protected AnvilListener() {
-  }
-
-  public void add(final Player player, final AnvilGUI gui) {
+  public static void register(final Player player, final AnvilGUI gui) {
     openInventories.put(player, gui);
   }
 
-  public void remove(final Player player) {
+  public static void unregister(final Player player) {
     openInventories.remove(player);
   }
 
+  public AnvilListener(final JavaPlugin host) {
+    this.host = host;
+  }
+
   @EventHandler
-  public void onInventoryClick(final InventoryClickEvent e) {
-    final Player clicker = (Player) e.getWhoClicked();
+  public void onInventoryClick(final InventoryClickEvent event) {
+    final Player clicker = (Player) event.getWhoClicked();
     if (!openInventories.containsKey(clicker)) {
       return;
     }
-
     final Inventory inventory = openInventories.get(clicker).getInventory();
-
-    if (!e.getInventory().equals(inventory)) {
-      return;
-    }
-
-    e.setCancelled(true);
-    if (e.getRawSlot() != Slot.OUTPUT) {
-      return;
-    }
-
-    final ItemStack clicked = inventory.getItem(e.getRawSlot());
     final AnvilGUI gui = openInventories.get(clicker);
-    if (clicked == null || clicked.getType() == Material.AIR) {
-      return;
-    }
 
-    final String ret = gui.getBiFunction().apply(clicker, clicked.hasItemMeta() ? clicked.getItemMeta().getDisplayName() : clicked.getType().toString());
+    if (
+        ((event.getInventory().equals(inventory)) && (event.getRawSlot() < 3)) ||
+            (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) ||
+            ((event.getRawSlot() < 3) && ((event.getAction().equals(InventoryAction.PLACE_ALL)) || (event.getAction().equals(InventoryAction.PLACE_ONE)) || (event.getAction()
+                .equals(InventoryAction.PLACE_SOME)) || (event.getCursor() != null)))
+    ) {
+      event.setCancelled(true);
+      if (event.getRawSlot() == AnvilSlot.OUTPUT) {
+        final ItemStack clicked = inventory.getItem(AnvilSlot.OUTPUT);
+        if (clicked == null || clicked.getType() == Material.AIR) {
+          return;
+        }
 
-    if (ret != null) {
-      final ItemMeta meta = clicked.getItemMeta();
-      meta.setDisplayName(ret);
-      clicked.setItemMeta(meta);
-      inventory.setItem(e.getRawSlot(), clicked);
-    } else {
-      gui.closeInventory();
+        final Response response = gui.completeFunction.apply(clicker, clicked.hasItemMeta() ? clicked.getItemMeta().getDisplayName() : "");
+        if (response.getText() != null) {
+          final ItemMeta meta = clicked.getItemMeta();
+          meta.setDisplayName(response.getText());
+          clicked.setItemMeta(meta);
+          inventory.setItem(AnvilSlot.INPUT_LEFT, clicked);
+        } else {
+          gui.closeInventory();
+        }
+      }
     }
   }
 
   @EventHandler
-  public void onInventoryClose(final InventoryCloseEvent e) {
-    if (!openInventories.containsKey((Player) e.getPlayer())) {
+  public void onInventoryDrag(final InventoryDragEvent event) {
+    final Player clicker = (Player) event.getWhoClicked();
+    if (!openInventories.containsKey(clicker)) {
       return;
     }
+    final Inventory inventory = openInventories.get(clicker).getInventory();
 
-    final AnvilGUI gui = openInventories.get((Player) e.getPlayer());
+    if (event.getInventory().equals(inventory)) {
+      for (final int slot : AnvilSlot.values()) {
+        if (event.getRawSlots().contains(slot)) {
+          event.setCancelled(true);
+          break;
+        }
+      }
+    }
+  }
 
-    if (gui.isOpen() && e.getInventory().equals(gui.getInventory())) {
+  @EventHandler
+  public void onInventoryClose(final InventoryCloseEvent event) {
+    final Player clicker = (Player) event.getPlayer();
+    if (!openInventories.containsKey(clicker)) {
+      return;
+    }
+    final AnvilGUI gui = openInventories.get(clicker);
+
+    if (openInventories.get(clicker).isOpen() && event.getInventory().equals(gui.getInventory())) {
       gui.closeInventory();
-      openInventories.remove((Player) e.getPlayer());
+      if (gui.isPreventClose()) {
+        Bukkit.getScheduler().runTask(host, gui::openInventory);
+      }
     }
   }
 
