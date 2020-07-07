@@ -39,9 +39,9 @@ public class InventoryAPIListener implements Listener {
     }
 
     if (e.getClickedInventory().equals(p.getOpenInventory().getBottomInventory())) {
+      manager.getInventories().get(p).getProvider().onBottomClick(e);
       if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR || e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
         e.setCancelled(true);
-        manager.getInventories().get(p).getProvider().onBottomClick(e);
         return;
       }
     }
@@ -76,7 +76,7 @@ public class InventoryAPIListener implements Listener {
       return;
     }
 
-    int invSize = p.getOpenInventory().getTopInventory().getSize();
+    final int invSize = p.getOpenInventory().getTopInventory().getSize();
     for (final int slot : e.getRawSlots()) {
       if (slot >= invSize) {
         continue;
