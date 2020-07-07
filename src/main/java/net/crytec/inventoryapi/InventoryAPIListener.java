@@ -64,7 +64,7 @@ public class InventoryAPIListener implements Listener {
 
       manager.getContents().get(p).get(row, column).ifPresent(item -> item.run(e));
 
-      p.updateInventory();
+//      p.updateInventory();
     }
   }
 
