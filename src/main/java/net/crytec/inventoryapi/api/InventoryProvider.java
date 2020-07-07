@@ -1,6 +1,8 @@
 package net.crytec.inventoryapi.api;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
 public interface InventoryProvider {
 
@@ -11,10 +13,16 @@ public interface InventoryProvider {
   }
 
   public default void onClose(final Player player, final InventoryContent content) {
-    return;
   }
 
   public default void reopen(final Player player, final InventoryContent content) {
     content.getHost().open(player, content.pagination().getPage());
   }
+
+  default void onBottomClick(final InventoryClickEvent event) {
+  }
+
+  default void onBottomDrag(final InventoryDragEvent event) {
+  }
+
 }

@@ -1,9 +1,11 @@
 package net.crytec.inventoryapi.api;
 
-import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.IntSupplier;
 import net.crytec.inventoryapi.SmartInventory;
+import org.apache.commons.lang.mutable.MutableInt;
 
 public class SlotIterator {
 
@@ -14,19 +16,21 @@ public class SlotIterator {
 
   private boolean started = false;
   private boolean allowOverride = true;
-  private int row;
-  private int column;
+  private MutableInt row;
+  private MutableInt column;
 
-  private final Set<SlotPos> blacklisted = Sets.newHashSet();
 
-  public SlotIterator(final InventoryContent content, final SmartInventory inventory, final Type type, final int startRow, final int startColumn) {
+  private final Set<SlotPos> blacklisted = new HashSet<>();
+
+  public SlotIterator(final InventoryContent content, final SmartInventory inventory, final Type type, final int startRow,
+      final int startColumn) {
     this.content = content;
     this.inventory = inventory;
 
     this.type = type;
 
-    row = startRow;
-    column = startColumn;
+    row = new MutableInt(startRow);
+    column = new MutableInt(startColumn);
   }
 
   public SlotIterator(final InventoryContent content, final SmartInventory inventory, final Type type) {
@@ -34,76 +38,76 @@ public class SlotIterator {
   }
 
   public Optional<ClickableItem> get() {
-    return content.get(row, column);
+    return content.get(row.intValue(), column.intValue());
   }
 
-  public SlotIterator set(final ClickableItem item) {
+  public void set(final ClickableItem item) {
     if (canPlace()) {
-      content.set(row, column, item);
+      content.set(row.intValue(), column.intValue(), item);
     }
-
-    return this;
   }
 
+  public void addPagination(final Pagination pagination) {
+    for (final ClickableItem item : pagination.getPageItems()) {
+      next().set(item);
+
+      if (ended()) {
+        break;
+      }
+    }
+  }
+
+  /**
+   * Dont ask me. I dont know either...
+   * @return this instance for whatever reason
+   */
   public SlotIterator previous() {
-    if (row == 0 && column == 0) {
+    if (row.intValue() == 0 && column.intValue() == 0) {
       started = true;
       return this;
     }
+
+    MutableInt indicator = type == Type.HORIZONTAL ? this.column : this.row;
+    MutableInt factor = type == Type.VERTICAL ? this.column : this.row;
+    IntSupplier provider = type == Type.HORIZONTAL ? () -> inventory.getColumns() - 1 : () -> inventory.getRows() - 1;
 
     do {
       if (!started) {
         started = true;
       } else {
-        switch (type) {
-          case HORIZONTAL:
-            column--;
-
-            if (column == 0) {
-              column = inventory.getColumns() - 1;
-              row--;
-            }
-            break;
-          case VERTICAL:
-            row--;
-
-            if (row == 0) {
-              row = inventory.getRows() - 1;
-              column--;
-            }
-            break;
+        indicator.decrement();
+        if (indicator.intValue() == 0) {
+          indicator.setValue(provider.getAsInt());
+          factor.decrement();
         }
       }
-    } while (!canPlace() && (row != 0 || column != 0));
+    } while (!canPlace() && (row.intValue() != 0 || column.intValue() != 0));
 
     return this;
   }
 
+  /**
+   * Dont ask me. I dont know either...
+   * @return this instance for whatever reason
+   */
   public SlotIterator next() {
     if (ended()) {
       started = true;
       return this;
     }
 
+    MutableInt indicator = type == Type.HORIZONTAL ? this.column : this.row;
+    MutableInt factor = type == Type.VERTICAL ? this.column : this.row;
+    IntSupplier provider = type == Type.HORIZONTAL ? () -> inventory.getColumns() - 1 : () -> inventory.getRows() - 1;
+
     do {
       if (!started) {
         started = true;
       } else {
-        switch (type) {
-          case HORIZONTAL:
-            column = ++column % inventory.getColumns();
-
-            if (column == 0) {
-              row++;
-            }
-            break;
-          case VERTICAL:
-            row = ++row % inventory.getRows();
-
-            if (row == 0) {
-              column++;
-            }
-            break;
+        indicator.increment();
+        indicator.setValue(indicator.intValue() % provider.getAsInt());
+        if (indicator.intValue() == 0) {
+          factor.increment();
         }
       }
     } while (!canPlace() && !ended());
@@ -122,20 +126,20 @@ public class SlotIterator {
   }
 
   public int row() {
-    return row;
+    return row.intValue();
   }
 
   public SlotIterator row(final int row) {
-    this.row = row;
+    this.row = new MutableInt(row);
     return this;
   }
 
   public int column() {
-    return column;
+    return column.intValue();
   }
 
   public SlotIterator column(final int column) {
-    this.column = column;
+    this.column = new MutableInt(column);
     return this;
   }
 
@@ -144,7 +148,7 @@ public class SlotIterator {
   }
 
   public boolean ended() {
-    return row == inventory.getRows() - 1 && column == inventory.getColumns() - 1;
+    return row.intValue() == inventory.getRows() - 1 && column.intValue() == inventory.getColumns() - 1;
   }
 
   public boolean doesAllowOverride() {
@@ -157,7 +161,7 @@ public class SlotIterator {
   }
 
   private boolean canPlace() {
-    return !blacklisted.contains(SlotPos.of(row, column)) && (allowOverride || !get().isPresent());
+    return !blacklisted.contains(SlotPos.of(row.intValue(), column.intValue())) && (allowOverride || get().isEmpty());
   }
 
 

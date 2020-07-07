@@ -33,7 +33,7 @@ public class InventoryAPIListener implements Listener {
       return;
     }
 
-    if (e.getAction() == InventoryAction.NOTHING || e.getClickedInventory() == null) {
+    if (e.getClickedInventory() == null || e.getAction() == InventoryAction.NOTHING) {
       e.setCancelled(true);
       return;
     }
@@ -41,6 +41,7 @@ public class InventoryAPIListener implements Listener {
     if (e.getClickedInventory().equals(p.getOpenInventory().getBottomInventory())) {
       if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR || e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
         e.setCancelled(true);
+        manager.getInventories().get(p).getProvider().onBottomClick(e);
         return;
       }
     }
@@ -75,12 +76,17 @@ public class InventoryAPIListener implements Listener {
       return;
     }
 
+    int invSize = p.getOpenInventory().getTopInventory().getSize();
     for (final int slot : e.getRawSlots()) {
-      if (slot >= p.getOpenInventory().getTopInventory().getSize()) {
+      if (slot >= invSize) {
         continue;
       }
       e.setCancelled(true);
       break;
+    }
+
+    if (!e.isCancelled()) {
+      manager.getInventories().get(p).getProvider().onBottomDrag(e);
     }
   }
 
@@ -126,4 +132,5 @@ public class InventoryAPIListener implements Listener {
     manager.getInventories().clear();
     manager.getContents().clear();
   }
+
 }

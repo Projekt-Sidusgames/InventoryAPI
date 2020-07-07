@@ -2,12 +2,14 @@ package net.crytec.inventoryapi.api;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import net.crytec.inventoryapi.SmartInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class InventoryContent {
@@ -20,8 +22,6 @@ public class InventoryContent {
   private final Pagination pagination = new Pagination();
 
   private final Map<String, Object> properties = Maps.newHashMap();
-
-  private SlotIterator iterator;
 
   public InventoryContent(final SmartInventory inventory, final Player player) {
     holder = player;
@@ -44,15 +44,13 @@ public class InventoryContent {
   }
 
   public SlotIterator newIterator(final SlotIterator.Type type, final SlotPos startPos) {
-    final SlotIterator iterator = new SlotIterator(this, host, type, startPos.getRow(), startPos.getColumn());
-    this.iterator = iterator;
-    return iterator;
+    return new SlotIterator(this, host, type, startPos.getRow(), startPos.getColumn());
   }
 
   public Optional<SlotPos> firstEmpty() {
     for (int column = 0; column < contents[0].length; column++) {
       for (int row = 0; row < contents.length; row++) {
-        if (!get(row, column).isPresent()) {
+        if (get(row, column).isEmpty()) {
           return Optional.of(new SlotPos(row, column));
         }
       }
@@ -88,7 +86,7 @@ public class InventoryContent {
     }
 
     contents[row][column] = item;
-    update(row, column, item != null ? item : null);
+    update(row, column, item);
     return this;
   }
 
@@ -192,7 +190,9 @@ public class InventoryContent {
 
   public InventoryContent updateMeta(final SlotPos pos, final ItemMeta meta) {
     final int slot = host.getColumns() * pos.getRow() + pos.getColumn();
-    inventory.getItem(slot).setItemMeta(meta);
+    ItemStack item = inventory.getItem(slot);
+    Objects.requireNonNull(item);
+    item.setItemMeta(meta);
     return this;
   }
 

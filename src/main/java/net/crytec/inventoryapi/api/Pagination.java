@@ -65,6 +65,10 @@ public class Pagination {
   }
 
 
+  /**
+   * Use SlotIterator#addPagination instead.
+   */
+  @Deprecated
   public Pagination addToIterator(final SlotIterator iterator) {
     for (final ClickableItem item : getPageItems()) {
       iterator.next().set(item);
