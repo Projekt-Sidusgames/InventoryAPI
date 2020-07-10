@@ -136,8 +136,6 @@ public class AnvilGUI {
     inventory = container.toBukkitInventory(container);
     inventory.setItem(AnvilSlot.INPUT_LEFT, insert);
 
-    inventory.setItem(AnvilSlot.INPUT_RIGHT, new ItemStack(Material.COAL_BLOCK));
-
     containerId = container.getNextContainerId(player, container);
 
     container.sendPacketOpenWindow(player, containerId, inventoryTitle);
