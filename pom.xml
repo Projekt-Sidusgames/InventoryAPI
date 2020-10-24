@@ -6,7 +6,7 @@
 
   <groupId>net.crytec.libs</groupId>
   <artifactId>InventoryAPI</artifactId>
-  <version>1.1.7-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,20 +15,16 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>nexus-snapshots</id>
-      <url>http://repo.avarioncraft.de/repository/maven-snapshots/</url>
+      <id>avarion-dev</id>
+      <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>nexus-releases</id>
-      <url>http://repo.avarioncraft.de/repository/maven-releases/</url>
+      <id>avarion-dev</id>
+      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 
   <repositories>
-    <repository>
-      <id>spigot</id>
-      <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-    </repository>
     <repository>
       <id>avarion-dev</id>
       <url>http://168.119.168.65:8081/repository/maven-releases/</url>
