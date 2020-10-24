@@ -30,16 +30,16 @@
       <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
     <repository>
-      <id>avarion-private</id>
-      <url>http://repo.avarioncraft.de/repository/development/</url>
+      <id>avarion-dev</id>
+      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
     </repository>
   </repositories>
 
   <dependencies>
     <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.16.1-R0.1-SNAPSHOT</version>
+      <groupId>com.destroystokyo.paper</groupId>
+      <artifactId>papercraft</artifactId>
+      <version>1.16.3</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
