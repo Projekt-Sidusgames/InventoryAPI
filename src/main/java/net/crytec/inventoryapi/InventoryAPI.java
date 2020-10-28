@@ -16,6 +16,14 @@ public class InventoryAPI {
   private final JavaPlugin host;
   private final InventoryManager manager;
 
+  public static void init(JavaPlugin plugin) {
+    if (api == null) {
+      new InventoryAPI(plugin);
+    } else {
+      throw new IllegalStateException("Inventory API can only be initialized once.");
+    }
+  }
+
   public InventoryAPI(final JavaPlugin host) {
     InventoryAPI.api = this;
     this.host = host;
@@ -55,7 +63,6 @@ public class InventoryAPI {
         .item(new ItemStack(Material.APPLE))
         .title("Custom Title, yay :D")
         .open(viewer);
-
 
   }
 }
