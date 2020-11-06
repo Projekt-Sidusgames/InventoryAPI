@@ -1,16 +1,16 @@
 package net.crytec.inventoryapi.anvil;
 
-import net.minecraft.server.v1_16_R2.BlockPosition;
-import net.minecraft.server.v1_16_R2.ChatMessage;
-import net.minecraft.server.v1_16_R2.Container;
-import net.minecraft.server.v1_16_R2.ContainerAccess;
-import net.minecraft.server.v1_16_R2.ContainerAnvil;
-import net.minecraft.server.v1_16_R2.Containers;
-import net.minecraft.server.v1_16_R2.EntityPlayer;
-import net.minecraft.server.v1_16_R2.PacketPlayOutCloseWindow;
-import net.minecraft.server.v1_16_R2.PacketPlayOutOpenWindow;
-import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.ChatMessage;
+import net.minecraft.server.v1_16_R3.Container;
+import net.minecraft.server.v1_16_R3.ContainerAccess;
+import net.minecraft.server.v1_16_R3.ContainerAnvil;
+import net.minecraft.server.v1_16_R3.Containers;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.PacketPlayOutCloseWindow;
+import net.minecraft.server.v1_16_R3.PacketPlayOutOpenWindow;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
