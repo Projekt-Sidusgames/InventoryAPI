@@ -15,28 +15,27 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
+      <id>sidus-snapshots</id>
+      <url>http://repo.sidusgames.eu/repository/maven-snapshots/</url>
     </snapshotRepository>
-    <repository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
-    </repository>
   </distributionManagement>
 
   <repositories>
     <repository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
+      <id>sidus-releases</id>
+      <url>http://repo.sidusgames.eu/repository/maven-releases/</url>
+    </repository>
+    <repository>
+      <id>sidus-snapshots</id>
+      <url>http://repo.sidusgames.eu/repository/maven-snapshots/</url>
     </repository>
   </repositories>
 
   <dependencies>
     <dependency>
       <groupId>com.destroystokyo.paper</groupId>
-      <artifactId>papercraft</artifactId>
+      <artifactId>paper-mc</artifactId>
       <version>1.16.4</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
